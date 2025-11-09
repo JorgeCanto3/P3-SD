@@ -68,26 +68,24 @@ main (int argc, char *argv[])
 	if (opcion == 1) {
 	
 		if(solicitarviaje_1(pasajero)!=NULL){
+
 			printf("Viaje solicitado exitosamente.\n");
 			sleep(5); // Simula el tiempo del viaje
 
-			
-
+			int dist;
 
 			TerminarViajeArgs args;
-			args.pasajero = pasajero;
 
-
-			if(terminarviaje_1(args)!=NULL){
-				printf("Viaje terminado exitosamente.\n");
-			}else{
-				printf("Error al terminar el viaje.\n");
-			}
-		}else{
-			printf("Error al solicitar el viaje.\n");	
-		}
+			args.final.x = rand() % 50;
+			args.final.y = rand() % 50;
+			dist = sqrt(pow(args.final.x - pasajero.x, 2) + pow(args.final.y - pasajero.y, 2));
+			args.placas=solicitarviaje_1(pasajero)->placas;
+			args.costoViaje = solicitarviaje_1(pasajero)->tarifa * dist;
+			terminarviaje_1(args);
+			printf("Viaje terminado. Gracias por usar el servicio.\n");
 	
 	} 
+}
 
 
 	//Administrador
@@ -102,5 +100,6 @@ main (int argc, char *argv[])
 		
 	}
 	
-exit (0);
+
+	exit (0);
 }

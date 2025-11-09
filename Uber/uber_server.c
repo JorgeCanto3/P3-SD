@@ -11,6 +11,7 @@
 
 Uber listaUbers[Vehiculos];
 
+Servicio servicio = {0, 0, 0};
 
 void inicializarUbers() {
     for (int i = 0; i < Vehiculos; i++) {
@@ -39,49 +40,51 @@ Uber *
 solicitarviaje_1_svc(Posicion pasajero,  struct svc_req *rqstp)
 {
 	static Uber  result;
-
-	for (int i = 0; i < 8; i++) {
-		     printf("\nSolicitud de viaje recibida.\n");
-                bool viaje_encontrado = false;
-
-                while (!viaje_encontrado && i<Vehiculos)
-                {
-                    int i = 0;
-                    if (Uber[i].disponible)
-                    {
-                        int costo = rand() % 100 + 50;
-                        sprintf(viaje, "%s %d %d", Uber[i].placas, costo, i);
-                        Uber[i].disponible=false;
-                        send(socket_nuevo_fd, viaje, strlen(viaje)+1, 0);
-                        viaje_encontrado = true;
-                        ganancia += costo;
-                        totalViajes++; 	
-                    }
-                    i++;
-                }
-                if (!viaje_encontrado){
-                    strcpy(viaje, "No hay conductores");
-                    send(socket_nuevo_fd, viaje, strlen(viaje)+1, 0);
-                }
-	}
-	return &result;
+    float minDist = 10000.0;
+    bool viajeEncontrado = false;
+    int i = 0;
+    while (!viajeEncontrado && i<Vehiculos) {
+        if (listaUbers[i].disponible) {
+            float dist = sqrt(pow(listaUbers[i].posicion.x - pasajero.x, 2) + pow(listaUbers[i].posicion.y - pasajero.y, 2));
+            if (dist < minDist) {
+                minDist = dist;
+                result = listaUbers[i];
+                viajeEncontrado = true;
+            }
+        }
+        i++;
+    }
+    if (viajeEncontrado)
+    {
+        return &result;
+    }
+    else
+    {
+        return NULL;
+    }
+     
 }
 
 void *
 terminarviaje_1_svc(TerminarViajeArgs args,  struct svc_req *rqstp)
 {
 	static char * result;
-
-	/*
-	 * insert server code here
-	 */
-
-	for (int i = 0; i < 10; i++) {
-		result[i] = args.placas[i];
-	}
-
+    //Actualizar la información del Uber
+    for (int i = 0; i < Vehiculos; i++) {
+        if (strcmp(listaUbers[i].placas, args.placas) == 0) {
+            listaUbers[i].posicion = args.final;
+            listaUbers[i].disponible = true;
+            break;
+        }
+    }
+    
+    servicio.viajesRealizados += 1;
+    servicio.ganancia += args.costoViaje;
+    args.pos.x = rand() % 50;
+    args.pos.y = rand() % 50;
 
 	return (void *) &result;
+
 }
 
 Servicio *
@@ -89,9 +92,18 @@ estadoservicio_1_svc(struct svc_req *rqstp)
 {
 	static Servicio  result;
 
-	/*
-	 * insert server code here
-	 */
+    pruintf("Viajes realizados: %d\n", servicio.viajesRealizados);
+
+    printf("Ganancia total: %.2f\n", servicio.ganancia);
+
+    for (int i = 0; i < Vehiculos; i++)
+    {
+        if (listaUbers[i].disponible) {
+            servicio.numAutos += 1;
+        }
+    }
+    
+    printf("Numero de autos: %d\n", servicio.numAutos);
 
 	return &result;
 }
