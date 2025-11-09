@@ -77,11 +77,10 @@ terminarviaje_1_svc(TerminarViajeArgs args,  struct svc_req *rqstp)
             break;
         }
     }
-    
+
     servicio.viajesRealizados += 1;
     servicio.ganancia += args.costoViaje;
-    args.pos.x = rand() % 50;
-    args.pos.y = rand() % 50;
+
 
 	return (void *) &result;
 

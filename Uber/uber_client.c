@@ -81,6 +81,8 @@ main (int argc, char *argv[])
 			dist = sqrt(pow(args.final.x - pasajero.x, 2) + pow(args.final.y - pasajero.y, 2));
 			args.placas=solicitarviaje_1(pasajero)->placas;
 			args.costoViaje = solicitarviaje_1(pasajero)->tarifa * dist;
+			pasajero.x = args.final.x;
+			pasajero.y = args.final.y;
 			terminarviaje_1(args);
 			printf("Viaje terminado. Gracias por usar el servicio.\n");
 	
