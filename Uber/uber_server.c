@@ -39,30 +39,29 @@ void inicializarUbers() {
 Uber *
 solicitarviaje_1_svc(Posicion pasajero,  struct svc_req *rqstp)
 {
-	static Uber  result;
+    static Uber  result;
     float minDist = 10000.0;
     bool viajeEncontrado = false;
-    int i = 0;
-    while (!viajeEncontrado && i<Vehiculos) {
+    int uberMasCercano = -1;
+
+    for (int i = 0; i < Vehiculos; i++) {
         if (listaUbers[i].disponible) {
             float dist = sqrt(pow(listaUbers[i].posicion.x - pasajero.x, 2) + pow(listaUbers[i].posicion.y - pasajero.y, 2));
             if (dist < minDist) {
                 minDist = dist;
-                result = listaUbers[i];
+                uberMasCercano = i;
                 viajeEncontrado = true;
             }
         }
-        i++;
     }
-    if (viajeEncontrado)
-    {
+
+    if (viajeEncontrado) {
+        result = listaUbers[uberMasCercano];
+        listaUbers[uberMasCercano].disponible = false; 
         return &result;
-    }
-    else
-    {
+    } else {
         return NULL;
     }
-     
 }
 
 void *
