@@ -86,10 +86,12 @@ main (int argc, char *argv[])
 			terminarviaje_1(args);
 			printf("Viaje terminado. Gracias por usar el servicio.\n");
 	
-	} 
+		} 
+
+		else {
+			printf("No hay Ubers disponibles en este momento. Intente más tarde.\n");
+		}
 }
-
-
 	//Administrador
 	else if (opcion == 2)
 	{
